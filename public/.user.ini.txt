@@ -1,0 +1,2 @@
+curl.cainfo = "C:\Wamp.NET\cacert.pem"
+openssl.cafile = "C:\Wamp.NET\cacert.pem"
