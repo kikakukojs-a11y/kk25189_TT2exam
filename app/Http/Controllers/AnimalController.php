@@ -39,7 +39,7 @@ class AnimalController extends Controller
     public function showFavorites()
     {
         $animals = auth()->user()->favorites()->with('category')->get();
-    return view('favorites.index', compact('animals'));
+        return view('favorites.index', compact('animals'));
     }
 
     public function toggleFavorite(Animal $animal)
@@ -76,7 +76,7 @@ class AnimalController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('animals', 'public');
+            $validated['image'] = $request->file('image')->store('animals');
         }
 
         $animal = Animal::create($validated);
@@ -85,7 +85,7 @@ class AnimalController extends Controller
             $animal->characteristics()->attach($request->characteristics);
         }
 
-        return redirect()->route('animals.index');
+        return redirect()->route('animals.index')->with('success', 'Animal profile created!');
     }
 
     public function edit(Animal $animal) 
@@ -109,20 +109,26 @@ class AnimalController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('animals', 'public');
+            if ($animal->image) {
+                Storage::delete($animal->image);
+            }
+            $validated['image'] = $request->file('image')->store('animals');
         }
 
         $animal->update($validated);
 
         $animal->characteristics()->sync($request->input('characteristics', []));
 
-        return redirect()->route('animals.index');
+        return redirect()->route('animals.index')->with('success', 'Animal profile updated!');
     }
 
     public function destroy(Animal $animal) 
     {
+        if ($animal->image) {
+            Storage::delete($animal->image);
+        }
+
         $animal->delete();
         return redirect()->route('animals.index')->with('success', 'Animal profile deleted!');
     }
-    
 }
