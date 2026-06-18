@@ -95,3 +95,10 @@ Route::middleware(['auth'])->group(function () {
 if (file_exists(__DIR__.'/auth.php')) {
     require __DIR__.'/auth.php';
 }
+Route::get('/test-disk', function () {
+    return response()->json([
+        'current_default_disk' => config('filesystems.default'),
+        'env_filesystem_disk'  => env('FILESYSTEM_DISK'),
+        'aws_url_value'        => config('filesystems.disks.s3.url'),
+    ]);
+});
