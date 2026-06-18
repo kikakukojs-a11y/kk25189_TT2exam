@@ -12,14 +12,17 @@
             {{ auto_translate(session('success')) }}
         </div>
     @endif
-
     <div class="row">
         <div class="col-md-6">
+
+
             @if($animal->image)
-                <img src="{{ asset('storage/' . $animal->image) }}" alt="{{ auto_translate('Photo of') }} {{ $animal->name }}" class="img-fluid rounded shadow-sm mb-3">
-            @else
-                <div class="bg-secondary-subtle p-5 text-center text-muted rounded mb-3">{{ auto_translate('No Photo Available') }}</div>
-            @endif
+    <img src="{{ Storage::url($animal->image) }}" alt="{{ $animal->name }}" class="img-fluid w-100 object-fit-cover" style="max-height: 450px;">
+@else
+    <div class="bg-light text-center py-5 text-muted rounded border mb-3">
+        {{ auto_translate('No Image Available') }}
+    </div>
+@endif
             
             <h1>{{ $animal->name }} <small class="text-muted">({{ auto_translate('ID: #') }}{{ $animal->id }})</small></h1>
             <p>{{ auto_translate('Category:') }} <strong>{{ auto_translate($animal->category->name ?? 'Uncategorized') }}</strong></p>

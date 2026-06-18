@@ -52,11 +52,14 @@
                     <div class="col">
                         <div class="card h-100">
                     
-                            @if($animal->image)
-                                <img src="{{ asset('storage/' . $animal->image) }}" class="card-img-top" alt="{{ auto_translate('Photo of') }} {{ $animal->name }}">
-                            @else
-                                <div class="bg-light text-center py-5 border-bottom text-muted">{{ auto_translate('No Image Available') }}</div>
-                            @endif
+@if($animal->image)
+    <img src="{{ Storage::url($animal->image) }}" alt="{{ $animal->name }}" class="card-img-top object-fit-cover" style="height: 250px;">
+@else
+    <div class="bg-light text-center text-muted">
+        <i class="bi bi-image d-block mb-2"></i>
+        {{ auto_translate('No Image Available') }}
+    </div>
+@endif
 
                             <div class="card-body">
                                 <h5 class="card-title fw-bold">{{ $animal->name }}</h5>
