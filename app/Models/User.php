@@ -33,4 +33,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Application::class);
     }
+    public function favorites()
+{
+    return $this->belongsToMany(Animal::class, 'favorites')->withTimestamps();
+}
 }

@@ -4,69 +4,84 @@
 <div class="container py-4">
     
     <div class="mb-3">
-        <a href="{{ route('animals.index') }}" class="btn btn-outline-secondary">← {{ __('Back to All Animals') }}</a>
+        <a href="{{ route('animals.index') }}" class="btn btn-outline-secondary">← {{ auto_translate('Back to All Animals') }}</a>
     </div>
 
     @if(session('success'))
-        <div class="alert">
-            {{ session('success') }}
+        <div class="alert alert-success">
+            {{ auto_translate(session('success')) }}
         </div>
     @endif
 
     <div class="row">
         <div class="col-md-6">
             @if($animal->image)
-                <img src="{{ asset('storage/' . $animal->image) }}" alt="{{ __('Photo of') }} {{ $animal->name }}" class="img-fluid">
+                <img src="{{ asset('storage/' . $animal->image) }}" alt="{{ auto_translate('Photo of') }} {{ $animal->name }}" class="img-fluid rounded shadow-sm mb-3">
             @else
-                <div class="bg-light p-5 text-center text-muted mb-3">{{ __('No Photo Available') }}</div>
+                <div class="bg-secondary-subtle p-5 text-center text-muted rounded mb-3">{{ auto_translate('No Photo Available') }}</div>
             @endif
             
-            <h1>{{ $animal->name }} <small class="text-muted">({{ __('ID: #') }}{{ $animal->id }})</small></h1>
-            <p>{{ __('Category:') }} <strong>{{ $animal->category->name ?? __('Uncategorized') }}</strong></p>
+            <h1>{{ $animal->name }} <small class="text-muted">({{ auto_translate('ID: #') }}{{ $animal->id }})</small></h1>
+            <p>{{ auto_translate('Category:') }} <strong>{{ auto_translate($animal->category->name ?? 'Uncategorized') }}</strong></p>
             
-            <h5 class="mt-4">{{ __('Characteristics:') }}</h5>
+            <h5 class="mt-4">{{ auto_translate('Characteristics:') }}</h5>
             @if($animal->characteristics && $animal->characteristics->count() > 0)
                 <div>
                     @foreach($animal->characteristics as $characteristic)
-                        <span class="text-dark">{{ $characteristic->name }}</span><i>, </i>
+                        <span class="badge bg-dark-subtle text-dark me-1 p-2">{{ auto_translate($characteristic->name) }}</span>
                     @endforeach
                 </div>
             @else
-                <p class="text-muted small">{{ __('No characteristics tags specified for this animal profile.') }}</p>
+                <p class="text-muted small">{{ auto_translate('No characteristics tags specified for this animal profile.') }}</p>
             @endif
         </div>
 
         <div class="col-md-6 mb-4">
-            <h2>{{ __('Adopt') }} {{ $animal->name }}</h2>
-            <p class="text-muted">{{ __('Write a motivation letter to adopt this animal.') }}</p>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="m-0">{{ auto_translate('Adopt') }} {{ $animal->name }}</h2>
+                
+                @auth
+                    @php
+                        $isFavorited = Auth::user()->favorites->contains($animal->id);
+                    @endphp
+                    <form action="{{ route('favorites.toggle', $animal) }}" method="POST" class="m-0">
+                        @csrf
+                        <button type="submit" class="btn {{ $isFavorited ? 'text-danger' : 'text-success' }}">
+                            {{ $isFavorited ? auto_translate('Remove from Favorites')  : auto_translate('Add to Favorites')  }}
+                        </button>
+                    </form>
+                @endauth
+            </div>
+
+            <p class="text-muted">{{ auto_translate('Write a motivation letter to adopt this animal.') }}</p>
             
-            <form action="{{ route('applications.store') }}" method="POST">
+            <form action="{{ route('applications.store') }}" method="POST" class="mb-4">
                 @csrf
                 <input type="hidden" name="animal_id" value="{{ $animal->id }}">
 
                 <div class="mb-3">
-                    <label for="notes" class="form-label">{{ __('Adoption intent') }}</label>
+                    <label for="notes" class="form-label font-weight-bold">{{ auto_translate('Adoption intent') }}</label>
                     <textarea name="notes" id="notes" rows="5" class="form-control @error('notes') is-invalid @enderror" required>{{ old('notes') }}</textarea>
                     
                     @error('notes')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback">{{ auto_translate($message) }}</div>
                     @enderror
                 </div>
 
-                <button type="submit" class="btn w-100 text-success">{{ __('Submit My Application') }}</button>
+                <button type="submit" class="btn btn-success w-100">{{ auto_translate('Submit My Application') }}</button>
             </form>
 
             @auth
                 @if(Auth::user()->role === 'Admin')
                     <div class="border p-3 rounded bg-light">
-                        <strong>{{ __('Admin Controls:') }}</strong>
-                        <div class="mt-2">
-                            <a href="{{ route('admin.animals.edit', $animal->id) }}" class="btn btn-sm">{{ __('Edit Profile') }}</a>
+                        <strong class="text-secondary d-block mb-2">{{ auto_translate('Admin Controls:') }}</strong>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('admin.animals.edit', $animal->id) }}" class="btn btn-sm text-primary">{{ auto_translate('Edit Profile') }}</a>
 
-                            <form action="{{ route('admin.animals.destroy', $animal->id) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('Soft-delete this profile?') }}');">
+                            <form action="{{ route('admin.animals.destroy', $animal->id) }}" method="POST" class="d-inline m-0" onsubmit="return confirm('{{ auto_translate('Soft-delete this profile?') }}');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm text-danger">{{ __('Delete Profile') }}</button>
+                                <button type="submit" class="btn btn-sm text-danger">{{ auto_translate('Delete Profile') }}</button>
                             </form>
                         </div>
                     </div>

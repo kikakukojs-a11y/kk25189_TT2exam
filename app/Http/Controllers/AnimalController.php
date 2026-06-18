@@ -38,8 +38,8 @@ class AnimalController extends Controller
 
     public function showFavorites()
     {
-        $favorites = auth()->user()->favoriteAnimals()->get();
-        return view('favorites.index', compact('favorites'));
+        $animals = auth()->user()->favorites()->with('category')->get();
+    return view('favorites.index', compact('animals'));
     }
 
     public function toggleFavorite(Animal $animal)
@@ -124,4 +124,5 @@ class AnimalController extends Controller
         $animal->delete();
         return redirect()->route('animals.index')->with('success', 'Animal profile deleted!');
     }
+    
 }

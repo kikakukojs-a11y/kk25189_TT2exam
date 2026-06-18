@@ -19,7 +19,7 @@ class Application extends Model
     protected function status(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => app(TranslationService::class)->__((string)$value, app()->getLocale())
+            get: fn ($value) => app(TranslationService::class)->translate((string)$value, app()->getLocale())
         );
     }
 
