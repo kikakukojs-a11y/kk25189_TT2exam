@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-use Illuminate\Support\Facades\Log;
+
 use App\Http\Controllers\Controller;
 use App\Models\Application;
 use App\Mail\ApplicationAccepted;
@@ -20,33 +20,32 @@ class ApplicationController extends Controller
         return view('admin.applications.index', compact('applications'));
     }
 
-   public function update(Request $request, $id)
-{throw new \Exception("The server is definitely running THIS code!");
-    Log::info('--- Update method triggered for Application ID: ' . $id);
-    
-    $request->validate([
-        'status' => 'required|in:Approved,Rejected'
-    ]);
+   use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\View;
 
+public function update(Request $request, $id)
+{
+    $request->validate(['status' => 'required|in:Approved,Rejected']);
     $application = Application::findOrFail($id);
-    $application->update([
-        'status' => $request->status
-    ]);
-    
-    Log::info('--- Status updated to: ' . $request->status);
-
+    $application->update(['status' => $request->status]);
     $application->load(['user', 'animal']);
 
-    if ($application->status === 'Approved') {
-        Log::info('--- Attempting to send APPROVED email to: ' . $application->user->email);
-        Mail::to($application->user->email)->send(new ApplicationAccepted($application));
-    } elseif ($application->status === 'Rejected') {
-        Log::info('--- Attempting to send REJECTED email to: ' . $application->user->email);
-        Mail::to($application->user->email)->send(new ApplicationDeclined($application));
-    } else {
-        Log::info('--- Logic skipped: Status was not Approved or Rejected. Value was: ' . $application->status);
-    }
+    $view = ($application->status === 'Approved') ? 'emails.application-accepted' : 'emails.application-declined';
+    $subject = ($application->status === 'Approved') ? 'Your Application Approved' : 'Your Application Declined';
 
-    return redirect()->back()->with('success', 'Status updated.');
+    $htmlContent = View::make($view, ['application' => $application])->render();
+
+    $response = Http::withHeaders([
+        'api-key' => config('services.brevo.key'),
+        'Content-Type' => 'application/json',
+        'Accept' => 'application/json',
+    ])->post('https://api.brevo.com/v3/smtp/email', [
+        'sender' => ['email' => 'kikakukojs0@gmail.com', 'name' => 'Pet Adoption Shelter'],
+        'to' => [['email' => $application->user->email]],
+        'subject' => $subject,
+        'htmlContent' => $htmlContent,
+    ]);
+
+    return redirect()->back()->with('success', 'Status updated and email sent.');
 }
 }
