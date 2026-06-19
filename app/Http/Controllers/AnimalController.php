@@ -87,10 +87,9 @@ class AnimalController extends Controller
             'image' => 'nullable|image|max:2048',
         ]);
 
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('animals');
-        }
-
+if ($request->hasFile('image')) {
+    $validated['image'] = $request->file('image')->store('animals');
+}
         $animal = Animal::create($validated);
 
         if ($request->has('characteristics')) {
@@ -120,12 +119,10 @@ class AnimalController extends Controller
             'image' => 'nullable|image|max:2048',
         ]);
 
-        if ($request->hasFile('image')) {
-            if ($animal->image) {
-                Storage::delete($animal->image);
-            }
-            $validated['image'] = $request->file('image')->store('animals');
-        }
+if ($request->hasFile('image')) {
+    $validated['image'] = $request->file('image')->store('animals');
+}
+
 
         $animal->update($validated);
 
