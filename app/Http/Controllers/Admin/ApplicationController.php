@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\Application;
 use App\Mail\ApplicationAccepted;
@@ -20,27 +20,33 @@ class ApplicationController extends Controller
         return view('admin.applications.index', compact('applications'));
     }
 
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|in:Approved,Rejected'
-        ]);
+   public function update(Request $request, $id)
+{
+    Log::info('--- Update method triggered for Application ID: ' . $id);
+    
+    $request->validate([
+        'status' => 'required|in:Approved,Rejected'
+    ]);
 
-        $application = Application::findOrFail($id);
-        
-        $application->update([
-            'status' => $request->status
-        ]);
+    $application = Application::findOrFail($id);
+    $application->update([
+        'status' => $request->status
+    ]);
+    
+    Log::info('--- Status updated to: ' . $request->status);
 
-        $application->load(['user', 'animal']);
+    $application->load(['user', 'animal']);
 
-
-        if ($application->status === 'Approved') {
-            Mail::to($application->user->email)->send(new ApplicationAccepted($application));
-        } elseif ($application->status === 'Rejected') {
-            Mail::to($application->user->email)->send(new ApplicationDeclined($application));
-        }
-
-        return redirect()->back()->with('success', 'Pieteikuma statuss atjaunināts un lietotājam nosūtīts e-pasts');
+    if ($application->status === 'Approved') {
+        Log::info('--- Attempting to send APPROVED email to: ' . $application->user->email);
+        Mail::to($application->user->email)->send(new ApplicationAccepted($application));
+    } elseif ($application->status === 'Rejected') {
+        Log::info('--- Attempting to send REJECTED email to: ' . $application->user->email);
+        Mail::to($application->user->email)->send(new ApplicationDeclined($application));
+    } else {
+        Log::info('--- Logic skipped: Status was not Approved or Rejected. Value was: ' . $application->status);
     }
+
+    return redirect()->back()->with('success', 'Status updated.');
+}
 }
