@@ -16,8 +16,14 @@
         <div class="col-md-6">
 
 
-            @if($animal->image)
-    <img src="{{ Storage::url($animal->image) }}" alt="{{ $animal->name }}" class="img-fluid w-100 object-fit-cover" style="max-height: 450px;">
+@if($animal->image)
+    <img src="{{ Storage::url($animal->image) }}" alt="{{ $animal->name }}" class="img-fluid w-100 object-fit-cover mb-3" style="max-height: 450px;">
+    
+    <div class="d-grid">
+        <a href="{{ route('animals.download', $animal->id) }}" class="btn btn-outline-secondary">
+            <i class="bi bi-download"></i> {{ auto_translate('Download Photo') }}
+        </a>
+    </div>
 @else
     <div class="bg-light text-center py-5 text-muted rounded border mb-3">
         {{ auto_translate('No Image Available') }}

@@ -53,6 +53,8 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:Registered User'])->group(function () {
         Route::get('/my-applications', [ApplicationController::class, 'index'])->name('applications.index');
         Route::get('/animals/{animal}/apply', [ApplicationController::class, 'create'])->name('applications.create');
+        Route::get('/animals/{animal}/download-photo', [AnimalController::class, 'downloadPhoto'])
+        ->name('animals.download');
         Route::post('/applications', [ApplicationController::class, 'store'])->name('applications.store');
         Route::get('/my-favorites', [AnimalController::class, 'showFavorites'])->name('favorites.index');
     });
@@ -82,6 +84,7 @@ Route::middleware(['auth'])->group(function () {
             Route::put('/animals/{animal}', [AnimalController::class, 'update'])->name('animals.update');
             Route::delete('/animals/{animal}', [AnimalController::class, 'destroy'])->name('animals.destroy');
 
+
             // Trash Controls
             Route::get('/trash', [TrashController::class, 'index'])->name('trash.index');
             Route::post('/trash/animals/{id}/restore', [TrashController::class, 'restoreAnimal'])->name('trash.animals.restore');
@@ -90,15 +93,9 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/trash/categories/{id}/restore', [TrashController::class, 'restoreCategory'])->name('trash.categories.restore');
             Route::delete('/trash/categories/{id}/force-delete', [TrashController::class, 'forceDeleteCategory'])->name('trash.categories.force-delete');
         });
+        
 });
 
 if (file_exists(__DIR__.'/auth.php')) {
     require __DIR__.'/auth.php';
 }
-Route::get('/test-disk', function () {
-    return response()->json([
-        'current_default_disk' => config('filesystems.default'),
-        'env_filesystem_disk'  => env('FILESYSTEM_DISK'),
-        'aws_url_value'        => config('filesystems.disks.s3.url'),
-    ]);
-});

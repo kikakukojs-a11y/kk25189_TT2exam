@@ -17,14 +17,14 @@
                 <div class="col">
                     <div class="card h-100 shadow-sm">
 
-                        @if($animal->image)
-                            <img src="{{ asset('storage/' . $animal->image) }}" alt="{{ $animal->name }}" class="card-img-top" style="height: 200px; object-fit: cover;">
-                        @else
-                            <div class="bg-secondary-subtle text-muted d-flex align-items-center justify-content-center card-img-top" style="height: 200px;">
-                                <span>{{ auto_translate('No Image Available') }}</span>
-                            </div>
-                        @endif
-
+        @if($animal->image)
+            <img src="{{ Storage::url($animal->image) }}" alt="{{ $animal->name }}" class="card-img-top object-fit-cover" style="height: 250px;">
+        @else
+        <div class="bg-light text-center text-muted">
+            <i class="bi bi-image d-block mb-2"></i>
+            {{ auto_translate('No Image Available') }}
+        </div>
+        @endif
 
                         <div class="card-body">
                             <h5 class="card-title">{{ $animal->name }}</h5>

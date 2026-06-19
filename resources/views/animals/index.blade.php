@@ -52,14 +52,14 @@
                     <div class="col">
                         <div class="card h-100">
                     
-@if($animal->image)
-    <img src="{{ Storage::url($animal->image) }}" alt="{{ $animal->name }}" class="card-img-top object-fit-cover" style="height: 250px;">
-@else
-    <div class="bg-light text-center text-muted">
-        <i class="bi bi-image d-block mb-2"></i>
-        {{ auto_translate('No Image Available') }}
-    </div>
-@endif
+        @if($animal->image)
+            <img src="{{ Storage::url($animal->image) }}" alt="{{ $animal->name }}" class="card-img-top object-fit-cover" style="height: 250px;">
+        @else
+        <div class="bg-light text-center text-muted">
+            <i class="bi bi-image d-block mb-2"></i>
+            {{ auto_translate('No Image Available') }}
+        </div>
+        @endif
 
                             <div class="card-body">
                                 <h5 class="card-title fw-bold">{{ $animal->name }}</h5>
@@ -67,7 +67,7 @@
                                     <span class="badge bg-secondary me-1">
                                         {{ ucfirst($animal->species ?? $animal->category->name ?? auto_translate('Animal')) }}
                                     </span>
-                                    {{ $animal->breed ?? auto_translate('Mixed Breed') }}
+                                    {{ $animal->breed}}
                                 </p>
                                 <a href="{{ route('animals.show', $animal->id) }}" class="btn btn-outline-primary w-100">
                                     {{ auto_translate('View Profile Details') }}

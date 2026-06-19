@@ -63,6 +63,18 @@ class AnimalController extends Controller
         $characteristics = Characteristic::all();
         return view('admin.animals.create', compact('categories', 'characteristics'));
     }
+    public function downloadPhoto(Animal $animal)
+    {
+        if (!$animal->image) {
+            return redirect()->back()->with('error', 'This profile does not have a photo to download.');
+        }
+        if (!Storage::exists($animal->image)) {
+        return redirect()->back()->with('error', 'The file could not be found on the storage server. Please re-upload it.');
+    }
+        $extension = pathinfo($animal->image, PATHINFO_EXTENSION);
+        $downloadName = $animal->name . '-Photo.' . $extension;
+        return Storage::download($animal->image, $downloadName);
+    }
 
     public function store(Request $request)
     {
