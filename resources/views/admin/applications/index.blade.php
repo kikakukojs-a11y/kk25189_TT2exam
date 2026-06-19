@@ -29,7 +29,13 @@
                     <td>{{ $application->animal->name ?? auto_translate('Animal #') . $application->animal_id }}</td>
                     
 
-
+                    <td>
+                        @if($application->notes || $application->message)
+                            {{ app(App\Services\TranslationService::class)->__($application->notes ?? $application->message, app()->getLocale()) }}
+                        @else
+                            {{ auto_translate('No notes') }}
+                        @endif
+                    </td>
 
                     <td>
 
