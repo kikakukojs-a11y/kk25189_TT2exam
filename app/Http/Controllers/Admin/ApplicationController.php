@@ -21,7 +21,7 @@ class ApplicationController extends Controller
     }
 
    public function update(Request $request, $id)
-{
+{throw new \Exception("The server is definitely running THIS code!");
     Log::info('--- Update method triggered for Application ID: ' . $id);
     
     $request->validate([
